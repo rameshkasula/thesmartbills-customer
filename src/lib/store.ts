@@ -1,4 +1,6 @@
 import { create } from "zustand"
+import axiosInstance from "@/config/axiosInstance"
+import { getCookie, eraseCookie } from "@/lib/cookies"
 
 export interface MenuItem {
   id: string
@@ -17,9 +19,10 @@ export interface CartItem {
 }
 
 export interface User {
+  id?: string
   name: string
-  phone: string
-  token: string
+  email?: string
+  phone?: string
 }
 
 export interface Order {
@@ -43,6 +46,7 @@ interface AppState {
   updateQuantity: (itemId: string, quantity: number) => void
   clearCart: () => void
   createOrder: () => Order
+  fetchUser: () => Promise<void>
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -52,7 +56,23 @@ export const useAppStore = create<AppState>((set, get) => ({
   orders: [],
 
   setTableId: (tableId) => set({ tableId }),
-  setUser: (user) => set({ user }),
+  setUser: (user) => {
+    set({ user })
+  },
+
+  fetchUser: async () => {
+    if (!getCookie("tsb_customer_token")) {
+      set({ user: null })
+      return
+    }
+    try {
+      const r = await axiosInstance.get<User>("/customer/profile")
+      set({ user: r.data })
+    } catch (e) {
+      set({ user: null })
+      eraseCookie("tsb_customer_token")
+    }
+  },
 
   addToCart: (item) => {
     set((state) => {
