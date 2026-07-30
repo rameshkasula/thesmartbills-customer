@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { IconCamera, IconChevronRight, IconQrcode } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,16 @@ export function ScanPage() {
   const [tableInput, setTableInput] = useState("")
   const [isScanning, setIsScanning] = useState(false)
   const [scanProgress, setScanProgress] = useState(0)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const tableIdParam = params.get("tableId")
+    const outletIdParam = params.get("outletId")
+    if (tableIdParam && outletIdParam) {
+      setTableId(tableIdParam)
+      navigate(`${APP_PATHS.MENU_ITEMS}/${tableIdParam}?outletId=${outletIdParam}`, { replace: true })
+    }
+  }, [navigate, setTableId])
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault()

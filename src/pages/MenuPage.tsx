@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import { useState } from "react"
 import { 
   IconPlus, 
@@ -21,14 +21,16 @@ import { menuItemApi } from "@/api/menuitems.api"
 export function MenuPage() {
   const { tableId } = useParams<{ tableId: string }>()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const outletId = searchParams.get("outletId") || "6a6ad0a2e4e7a85cfca45b7a"
   
   const { cart, addToCart, updateQuantity } = useAppStore()
   const [selectedCategory, setSelectedCategory] = useState<string>("All")
   const [searchQuery, setSearchQuery] = useState("")
 
   const { data: menuItems = [], isLoading } = useQuery({
-    queryKey: ["menuItems"],
-    queryFn: () => menuItemApi.list("6a6ad0a2e4e7a85cfca45b7a"),
+    queryKey: ["menuItems", outletId],
+    queryFn: () => menuItemApi.list(outletId),
   })
 
   const categories = ["All", ...Array.from(new Set(menuItems.map((item) => item.category)))]
