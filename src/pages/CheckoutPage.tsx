@@ -13,14 +13,12 @@ import {
   IconFileText
 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAppStore } from "@/lib/store"
 
 export function CheckoutPage() {
   const navigate = useNavigate()
-  const { cart, tableId, user, updateQuantity, removeFromCart, setUser } = useAppStore()
+  const { cart, tableId, user, updateQuantity, removeFromCart } = useAppStore()
   
   const { data: outlet } = useQuery({
     queryKey: ["outlet", "6a6ad0a2e4e7a85cfca45b7a"],

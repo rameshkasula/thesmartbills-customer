@@ -15,58 +15,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { useAppStore, type MenuItem } from "@/lib/store"
+import { useAppStore } from "@/lib/store"
 import { menuItemApi } from "@/api/menuitems.api"
-
-const MOCK_MENU: MenuItem[] = [
-  {
-    id: "1",
-    name: "Crispy Truffle Fries",
-    price: 8.99,
-    description: "Golden hand-cut fries tossed in white truffle oil, grated parmesan, and fresh herbs.",
-    category: "Appetizers",
-    image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&auto=format&fit=crop&q=60",
-    isPopular: true,
-    isVeg: true
-  },
-  {
-    id: "2",
-    name: "Classic Smash Burger",
-    price: 14.99,
-    description: "Double smashed premium beef patty, melted cheddar, house pickle sauce, toasted brioche.",
-    category: "Mains",
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60",
-    isPopular: true,
-    isVeg: false
-  },
-  {
-    id: "3",
-    name: "Spicy Avocado Roll",
-    price: 12.49,
-    description: "Creamy avocado, cucumber, spicy aioli, tempura flakes, drizzled with sweet unagi sauce.",
-    category: "Mains",
-    image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&auto=format&fit=crop&q=60",
-    isVeg: true
-  },
-  {
-    id: "4",
-    name: "Warm Lava Chocolate Cake",
-    price: 7.99,
-    description: "Rich dark chocolate cake with a molten lava center, served with fresh vanilla bean gelato.",
-    category: "Desserts",
-    image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&auto=format&fit=crop&q=60",
-    isVeg: true
-  },
-  {
-    id: "5",
-    name: "Artisanal Mango Lemonade",
-    price: 4.99,
-    description: "Cold pressed fresh mango nectar, squeezed lemons, sparkling pure soda water.",
-    category: "Drinks",
-    image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500&auto=format&fit=crop&q=60",
-    isVeg: true
-  }
-]
 
 export function MenuPage() {
   const { tableId } = useParams<{ tableId: string }>()
