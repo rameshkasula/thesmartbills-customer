@@ -17,12 +17,14 @@ import { useAppStore } from "@/lib/store"
 export function OrderStatusPage() {
   const { orderId } = useParams<{ orderId: string }>()
   const navigate = useNavigate()
-  const { orders } = useAppStore()
+  const { orders, outletId } = useAppStore()
   const order = orders.find((o) => o.id === orderId)
 
+  const activeOutletId = outletId || "6a6ad0a2e4e7a85cfca45b7a"
+
   const { data: outlet } = useQuery({
-    queryKey: ["outlet", "6a6ad0a2e4e7a85cfca45b7a"],
-    queryFn: () => outletApi.getOutlet("6a6ad0a2e4e7a85cfca45b7a"),
+    queryKey: ["outlet", activeOutletId],
+    queryFn: () => outletApi.getOutlet(activeOutletId),
   })
 
   const taxPercent = outlet?.taxPercentage ?? 5

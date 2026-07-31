@@ -36,10 +36,12 @@ export interface Order {
 
 interface AppState {
   tableId: string | null
+  outletId: string | null
   cart: CartItem[]
   user: User | null
   orders: Order[]
   setTableId: (tableId: string | null) => void
+  setOutletId: (outletId: string | null) => void
   setUser: (user: User | null) => void
   addToCart: (item: MenuItem) => void
   removeFromCart: (itemId: string) => void
@@ -51,11 +53,13 @@ interface AppState {
 
 export const useAppStore = create<AppState>((set, get) => ({
   tableId: null,
+  outletId: null,
   cart: [],
   user: null,
   orders: [],
 
   setTableId: (tableId) => set({ tableId }),
+  setOutletId: (outletId) => set({ outletId }),
   setUser: (user) => {
     set({ user })
   },

@@ -11,6 +11,7 @@ const PaymentPage = lazy(() => import("@/pages/PaymentPage").then(module => ({ d
 const OrderStatusPage = lazy(() => import("@/pages/OrderStatusPage").then(module => ({ default: module.OrderStatusPage })))
 const AuthPage = lazy(() => import("@/pages/AuthPage").then(module => ({ default: module.AuthPage })))
 const ProfilePage = lazy(() => import("@/pages/ProfilePage").then(module => ({ default: module.ProfilePage })))
+const OrdersPage = lazy(() => import("@/pages/OrdersPage").then(module => ({ default: module.OrdersPage })))
 
 export function AppRoutes() {
   return (
@@ -22,6 +23,7 @@ export function AppRoutes() {
           <Route path={`${APP_PATHS.MENU_ITEMS}/:tableId`} element={<MenuPage />} />
           <Route path={APP_PATHS.CHECKOUT} element={<CheckoutPage />} />
           <Route path={APP_PATHS.PAYMENT} element={<PaymentPage />} />
+          <Route path={APP_PATHS.ORDERS} element={<OrdersPage />} />
           <Route path={APP_PATHS.ORDER_STATUS} element={<OrderStatusPage />} />
           <Route path={APP_PATHS.AUTH} element={<AuthPage />} />
           <Route path={APP_PATHS.PROFILE} element={<ProfilePage />} />

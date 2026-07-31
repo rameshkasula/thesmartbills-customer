@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { 
   IconPlus, 
   IconMinus, 
@@ -24,14 +24,24 @@ export function MenuPage() {
   const [searchParams] = useSearchParams()
   const outletId = searchParams.get("outletId") || "6a6ad0a2e4e7a85cfca45b7a"
   
-  const { cart, addToCart, updateQuantity } = useAppStore()
+  const { cart, addToCart, updateQuantity, setOutletId, setTableId } = useAppStore()
+
+  useEffect(() => {
+    if (outletId) setOutletId(outletId)
+    if (tableId) setTableId(tableId)
+  }, [outletId, tableId, setOutletId, setTableId])
   const [selectedCategory, setSelectedCategory] = useState<string>("All")
   const [searchQuery, setSearchQuery] = useState("")
 
-  const { data: menuItems = [], isLoading } = useQuery({
+  const { data: rawMenuItems = [], isLoading } = useQuery({
     queryKey: ["menuItems", outletId],
     queryFn: () => menuItemApi.list(outletId),
   })
+
+  const menuItems = rawMenuItems.map((item) => ({
+    ...item,
+    id: item.id || (item as any)._id,
+  }))
 
   const categories = ["All", ...Array.from(new Set(menuItems.map((item) => item.category)))]
 
@@ -98,14 +108,14 @@ export function MenuPage() {
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((n) => (
-              <Card key={n} className="overflow-hidden border border-border/65 animate-pulse">
-                <div className="flex">
-                  <div className="w-28 h-28 bg-muted" />
-                  <div className="p-3 flex-1 space-y-2">
-                    <div className="h-5 bg-muted rounded w-2/3" />
-                    <div className="h-4 bg-muted rounded w-full" />
-                    <div className="h-6 bg-muted rounded w-1/4 mt-2" />
-                  </div>
+              <Card key={n} className="overflow-hidden border border-border/65 animate-pulse p-4 space-y-3">
+                <div className="space-y-2">
+                  <div className="h-5 bg-muted rounded w-2/3" />
+                  <div className="h-4 bg-muted rounded w-full" />
+                </div>
+                <div className="flex justify-between items-center pt-2">
+                  <div className="h-5 bg-muted rounded w-1/5" />
+                  <div className="h-8 bg-muted rounded w-1/4" />
                 </div>
               </Card>
             ))}
@@ -119,66 +129,59 @@ export function MenuPage() {
           filteredItems.map((item) => {
             const inCart = cart.find((i) => i.menuItem.id === item.id)
             return (
-              <Card key={item.id} className="overflow-hidden border border-border/80 shadow-sm hover:shadow-md transition-all duration-250 group">
-                <div className="flex">
-                  <div className="w-28 h-28 overflow-hidden flex-shrink-0 relative">
-                    <img 
-                      src={item.image} 
-                      alt={item.name} 
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    {item.isVeg && (
-                      <div className="absolute top-1.5 left-1.5 bg-white/95 dark:bg-zinc-900/95 p-0.5 rounded border border-green-600">
-                        <IconLeaf size={10} className="text-green-600 fill-green-600" />
-                      </div>
+              <Card key={item.id} className="overflow-hidden border border-border/80 shadow-sm hover:shadow-md transition-all duration-250 group p-4 flex flex-col justify-between gap-3">
+                <div>
+                  <div className="flex items-start gap-2 justify-between">
+                    <div className="flex items-start gap-2">
+                      {item.isVeg !== undefined && (
+                        <div className={`mt-0.5 flex-shrink-0 flex items-center justify-center p-0.5 rounded border ${
+                          item.isVeg ? "border-green-600 bg-green-50/50 dark:bg-green-950/20" : "border-red-600 bg-red-50/50 dark:bg-red-950/20"
+                        }`}>
+                          <span className={`h-2.5 w-2.5 rounded-full ${item.isVeg ? "bg-green-600" : "bg-red-600"}`} />
+                        </div>
+                      )}
+                      <h3 className="font-semibold text-sm line-clamp-1 text-foreground group-hover:text-primary transition-colors">{item.name}</h3>
+                    </div>
+                    {item.isPopular && (
+                      <Badge variant="secondary" className="bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-[10px] gap-0.5 px-1.5 py-0 border border-amber-200/50 shrink-0">
+                        <IconFlame size={10} className="fill-amber-500 stroke-amber-500" /> Hot
+                      </Badge>
                     )}
                   </div>
-                  <div className="p-3 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center gap-1.5 justify-between">
-                        <h3 className="font-semibold text-sm line-clamp-1 text-foreground group-hover:text-primary transition-colors">{item.name}</h3>
-                        {item.isPopular && (
-                          <Badge variant="secondary" className="bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-[10px] gap-0.5 px-1.5 py-0 border border-amber-200/50">
-                            <IconFlame size={10} className="fill-amber-500 stroke-amber-500" /> Hot
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-normal">{item.description}</p>
-                    </div>
+                  <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-normal">{item.description}</p>
+                </div>
 
-                    <div className="flex justify-between items-center mt-2 pt-1.5 border-t border-dashed border-border">
-                      <span className="font-bold text-sm text-foreground">₹{item.price.toFixed(2)}</span>
-                      {inCart ? (
-                        <div className="flex items-center bg-primary/5 border border-primary/20 rounded-xl p-0.5 shadow-sm">
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-7 w-7 rounded-lg text-primary hover:bg-primary/10 active:scale-95"
-                            onClick={() => updateQuantity(item.id, inCart.quantity - 1)}
-                          >
-                            <IconMinus size={12} />
-                          </Button>
-                          <span className="px-2.5 text-xs font-bold text-primary">{inCart.quantity}</span>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-7 w-7 rounded-lg text-primary hover:bg-primary/10 active:scale-95"
-                            onClick={() => updateQuantity(item.id, inCart.quantity + 1)}
-                          >
-                            <IconPlus size={12} />
-                          </Button>
-                        </div>
-                      ) : (
-                        <Button 
-                          onClick={() => addToCart(item)}
-                          size="sm" 
-                          className="h-8 bg-primary hover:bg-primary/95 text-primary-foreground rounded-xl text-xs font-semibold px-3 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                          Add <IconPlus size={12} className="ml-1" />
-                        </Button>
-                      )}
+                <div className="flex justify-between items-center pt-2 border-t border-dashed border-border">
+                  <span className="font-bold text-sm text-foreground">₹{item.price.toFixed(2)}</span>
+                  {inCart ? (
+                    <div className="flex items-center bg-primary/5 border border-primary/20 rounded-xl p-0.5 shadow-sm">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-7 w-7 rounded-lg text-primary hover:bg-primary/10 active:scale-95 animate-fade-in"
+                        onClick={() => updateQuantity(item.id, inCart.quantity - 1)}
+                      >
+                        <IconMinus size={12} />
+                      </Button>
+                      <span className="px-2.5 text-xs font-bold text-primary">{inCart.quantity}</span>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-7 w-7 rounded-lg text-primary hover:bg-primary/10 active:scale-95 animate-fade-in"
+                        onClick={() => updateQuantity(item.id, inCart.quantity + 1)}
+                      >
+                        <IconPlus size={12} />
+                      </Button>
                     </div>
-                  </div>
+                  ) : (
+                    <Button 
+                      onClick={() => addToCart(item)}
+                      size="sm" 
+                      className="h-8 bg-primary hover:bg-primary/95 text-primary-foreground rounded-xl text-xs font-semibold px-3 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      Add <IconPlus size={12} className="ml-1" />
+                    </Button>
+                  )}
                 </div>
               </Card>
             )
@@ -188,7 +191,7 @@ export function MenuPage() {
 
       {/* Floating Bottom Cart Bar */}
       {cartCount > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-background/90 backdrop-blur-md border-t border-border/80 z-20 animate-slide-up">
+        <div className="fixed bottom-16 left-0 right-0 max-w-md mx-auto p-4 bg-background/90 backdrop-blur-md border-t border-border/80 z-20 animate-slide-up">
           <Button 
             onClick={() => navigate("/checkout")}
             className="w-full py-6 bg-primary hover:bg-primary/95 text-primary-foreground rounded-xl shadow-lg flex justify-between px-5 font-semibold transition-all hover:opacity-95 active:scale-[0.99]"

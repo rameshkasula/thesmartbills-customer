@@ -19,16 +19,18 @@ import { useAppStore } from "@/lib/store"
 
 export function PaymentPage() {
   const navigate = useNavigate()
-  const { cart, createOrder } = useAppStore()
+  const { cart, outletId, createOrder } = useAppStore()
   const [paymentMethod, setPaymentMethod] = useState<"card" | "upi" | "cash">("card")
 
   const [cardNumber, setCardNumber] = useState("")
   const [expiry, setExpiry] = useState("")
   const [cvv, setCvv] = useState("")
 
+  const activeOutletId = outletId || "6a6ad0a2e4e7a85cfca45b7a"
+
   const { data: outlet } = useQuery({
-    queryKey: ["outlet", "6a6ad0a2e4e7a85cfca45b7a"],
-    queryFn: () => outletApi.getOutlet("6a6ad0a2e4e7a85cfca45b7a"),
+    queryKey: ["outlet", activeOutletId],
+    queryFn: () => outletApi.getOutlet(activeOutletId),
   })
 
   const cartTotal = cart.reduce((acc, item) => acc + (item.menuItem.price * item.quantity), 0)

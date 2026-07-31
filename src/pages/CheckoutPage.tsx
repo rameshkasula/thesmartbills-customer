@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { outletApi } from "@/api/outlet.api"
 import { 
@@ -18,11 +18,14 @@ import { useAppStore } from "@/lib/store"
 
 export function CheckoutPage() {
   const navigate = useNavigate()
-  const { cart, tableId, user, updateQuantity, removeFromCart } = useAppStore()
+  const location = useLocation()
+  const { cart, tableId, outletId, user, updateQuantity, removeFromCart } = useAppStore()
+  
+  const activeOutletId = outletId || "6a6ad0a2e4e7a85cfca45b7a"
   
   const { data: outlet } = useQuery({
-    queryKey: ["outlet", "6a6ad0a2e4e7a85cfca45b7a"],
-    queryFn: () => outletApi.getOutlet("6a6ad0a2e4e7a85cfca45b7a"),
+    queryKey: ["outlet", activeOutletId],
+    queryFn: () => outletApi.getOutlet(activeOutletId),
   })
 
   const cartTotal = cart.reduce((acc, item) => acc + (item.menuItem.price * item.quantity), 0)
@@ -159,7 +162,7 @@ export function CheckoutPage() {
             </CardHeader>
             <CardContent>
               <Button 
-                onClick={() => navigate("/auth", { state: { from: "/checkout" } })}
+                onClick={() => navigate("/auth", { state: { from: location.pathname + location.search } })}
                 className="w-full bg-primary hover:bg-primary/95 text-primary-foreground rounded-xl py-5 shadow-md transition-all active:scale-[0.98] cursor-pointer"
               >
                 Sign In / Register with OTP
@@ -192,7 +195,7 @@ export function CheckoutPage() {
 
       {/* Footer Action Button */}
       {user && (
-        <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-background/90 backdrop-blur-md border-t border-border/80 z-20 animate-slide-up">
+        <div className="fixed bottom-16 left-0 right-0 max-w-md mx-auto p-4 bg-background/90 backdrop-blur-md border-t border-border/80 z-20 animate-slide-up">
           <Button 
             onClick={handleProceedToPayment}
             className="w-full py-6 bg-primary hover:bg-primary/95 text-primary-foreground rounded-xl shadow-lg font-semibold flex justify-center items-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99]"

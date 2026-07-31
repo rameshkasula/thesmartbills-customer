@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { 
   IconUser, 
   IconPhone, 
@@ -40,6 +40,7 @@ type ProfileFormValues = z.infer<typeof profileSchema>
 
 export function ProfilePage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, setUser } = useAppStore()
   
   const [apiError, setApiError] = useState<string | null>(null)
@@ -131,7 +132,7 @@ export function ProfilePage() {
             Please log in or create an account to view and manage your profile details.
           </p>
           <Button 
-            onClick={() => navigate("/auth")} 
+            onClick={() => navigate("/auth", { state: { from: location.pathname + location.search } })} 
             className="w-full bg-primary hover:bg-primary/95 text-white rounded-xl py-5 shadow-md cursor-pointer"
           >
             Go to Login

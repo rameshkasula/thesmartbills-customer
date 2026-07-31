@@ -52,7 +52,9 @@ export function AuthPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   // Redirect path
-  const from = (location.state as any)?.from || "/checkout"
+  const from = (location.state as any)?.from && (location.state as any).from !== "/auth"
+    ? (location.state as any).from
+    : "/"
 
   // React Hook Forms
   const {

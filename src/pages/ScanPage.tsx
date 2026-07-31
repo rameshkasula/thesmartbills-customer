@@ -17,6 +17,7 @@ import { APP_PATHS } from "@/config/paths"
 export function ScanPage() {
   const navigate = useNavigate()
   const setTableId = useAppStore((state) => state.setTableId)
+  const setOutletId = useAppStore((state) => state.setOutletId)
   const [tableInput, setTableInput] = useState("")
   const [isScanning, setIsScanning] = useState(false)
   const [scanProgress, setScanProgress] = useState(0)
@@ -27,9 +28,10 @@ export function ScanPage() {
     const outletIdParam = params.get("outletId")
     if (tableIdParam && outletIdParam) {
       setTableId(tableIdParam)
+      setOutletId(outletIdParam)
       navigate(`${APP_PATHS.MENU_ITEMS}/${tableIdParam}?outletId=${outletIdParam}`, { replace: true })
     }
-  }, [navigate, setTableId])
+  }, [navigate, setTableId, setOutletId])
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault()
